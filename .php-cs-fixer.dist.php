@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 $finder = PhpCsFixer\Finder::create()
+    ->exclude('vendor')
     ->in([
         __DIR__ . '/app',
         __DIR__ . '/config',
