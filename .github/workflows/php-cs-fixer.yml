@@ -1,0 +1,30 @@
+name: php-cs-fixer
+
+on: push
+
+jobs:
+  php_cs_fixer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: confirm version
+        run: |
+          php -v
+      - name: install php-cs-fixer
+        run: |
+          composer require --dev friendsofphp/php-cs-fixer -n
+          ./vendor/bin/php-cs-fixer --version
+      - name: dry-run php-cs-fixer
+        run: |
+          ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no . || true
+      - name: execute php-cs-fixer
+        run: |
+          ./vendor/bin/php-cs-fixer fix --using-cache=no
+          git status | grep modified || echo "GIT_STATUS_RESULT=$(echo $?)" >> $GITHUB_ENV
+      - name: commit & push
+        if: ${{ env.GIT_STATUS_RESULT == 0 }}
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "github_actions@example.com"
+          git commit -a -m "auto code format by Github Actions"
+          git push
