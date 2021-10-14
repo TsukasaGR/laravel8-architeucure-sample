@@ -24,6 +24,7 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
+        /** @var string $q */
         $q = $request->query('q');
 
         $searchQuery = addcslashes($q, '%_\\'); // 検索文字列をそのままの文字列として検索したいが、DBのエスケープ文字の場合そのまま渡すと正しく検索できないため、エスケープ文字の場合はバックスラッシュを付加して検索する
