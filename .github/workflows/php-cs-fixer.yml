@@ -16,7 +16,7 @@ jobs:
           ./vendor/bin/php-cs-fixer --version
       - name: dry-run php-cs-fixer
         run: |
-          ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no --config=.php-cs-fixer.dist.php . || true
+          ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no --config=.php-cs-fixer.dist.php || true
       - name: execute php-cs-fixer
         run: |
           ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no
