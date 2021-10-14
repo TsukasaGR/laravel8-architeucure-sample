@@ -1,6 +1,12 @@
 <?php declare(strict_types=1);
 
 $finder = PhpCsFixer\Finder::create()
+    ->exclude('vendor')
+    ->exclude('bootstrap')
+    ->exclude('node_modules')
+    ->exclude('public')
+    ->exclude('storage')
+    ->notName('_ide_helper.php')
     ->in([
         __DIR__ . '/app',
         __DIR__ . '/config',
