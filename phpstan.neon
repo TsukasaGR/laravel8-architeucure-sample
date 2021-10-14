@@ -1,0 +1,37 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - resources/views
+        - routes
+        - tests
+
+    # The level 8 is the highest level
+    level: max
+
+    ignoreErrors:
+        # Routeの設定によるもので定型句的に利用しているもので問題がなく、かつエラー除外も難しいため除外とする
+        -
+            message: '#Cannot call method name\(\) on array\|Illuminate\\Routing\\Route.#'
+            path: ./routes
+        # larave-ide-helper等を利用してEloquentモデルのプロパティをすべて書き出したほうが望ましいが、今回はそこまでしないのでプロパティがPHPDocで定義されていなくとも許可する
+        -
+            message: '#Access to an undefined property#'
+            path: ./app/Models
+
+    excludePaths:
+        # デフォルトで設定されているもので、かつエラー除外も難しいため除外とする
+        - ./routes/console.php
+        # laravel/breeze導入時に追加されたもので、追加修正も行わないため除外とする
+        - ./tests/Feature/Auth
+
+    checkMissingIterableValueType: false
+
+    # デフォルトの/tmpだとartisan経由で実行した際などでpermission deniedが発生する可能性があるため変更
+    tmpDir: ./storage/phpstan
