@@ -16,10 +16,10 @@ jobs:
           ./vendor/bin/php-cs-fixer --version
       - name: dry-run php-cs-fixer
         run: |
-          ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no . || true
+          ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no --config=.php-cs-fixer.dist.php . || true
       - name: execute php-cs-fixer
         run: |
-          ./vendor/bin/php-cs-fixer fix --using-cache=no
+          ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --using-cache=no
           git status | grep modified || echo "GIT_STATUS_RESULT=$(echo $?)" >> $GITHUB_ENV
       - name: commit & push
         if: ${{ env.GIT_STATUS_RESULT == 0 }}
