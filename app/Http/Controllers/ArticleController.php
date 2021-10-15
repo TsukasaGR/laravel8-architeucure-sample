@@ -9,6 +9,7 @@ use App\Http\Requests\Article\ValidateUrlRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Domains\Ogp;
+use App\Services\Domains\Article\DeleteArticleService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -111,6 +112,22 @@ class ArticleController extends Controller
 
         ArticlePosted::dispatch($article);
         $request->session()->flash('status', '記事を投稿しました');
+
+        return redirect()->route('dashboard');
+    }
+
+    /**
+     * UI側は作成していないが、ドメインサービスの実装例用に作成した
+     *
+     * @param Article $article
+     * @return RedirectResponse
+     * @throws \Throwable
+     */
+    public function destroy(Article $article)
+    {
+        DB::transaction(function () use ($article) {
+            (new DeleteArticleService($article))();
+        });
 
         return redirect()->route('dashboard');
     }
