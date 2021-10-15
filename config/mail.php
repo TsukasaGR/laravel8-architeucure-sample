@@ -115,4 +115,8 @@ return [
         ],
     ],
 
+    /*
+ * 管理者用メールアドレス設定
+ */
+    'admin' => env('MAIL_ADMIN_ADDRESS', 'testadmin@example.com'),
 ];

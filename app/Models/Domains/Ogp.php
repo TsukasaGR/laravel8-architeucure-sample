@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utils;
+namespace App\Models\Domains;
 
 use Embed\Embed;
 use Illuminate\Support\Facades\Log;

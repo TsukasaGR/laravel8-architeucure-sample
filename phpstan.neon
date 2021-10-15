@@ -24,6 +24,10 @@ parameters:
         -
             message: '#Access to an undefined property#'
             path: ./app/Models
+        # Eloquentモデルでscopeをチェーンさせようとすると警告されるが、これが使えないとqueryの局所的共通化ができないため残念だが除外する
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+            path: ./app/Models
 
     excludePaths:
         # デフォルトで設定されているもので、かつエラー除外も難しいため除外とする

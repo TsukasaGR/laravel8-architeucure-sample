@@ -26,9 +26,9 @@ class CommentController extends Controller
             );
         });
 
-        /** @var User $loggedInUser */
-        $loggedInUser = Auth::user();
-        $ownComment = $article->getUserComment($loggedInUser);
+        /** @var int $loggedInUserId */
+        $loggedInUserId = Auth::id();
+        $ownComment = $article->getUserComment($loggedInUserId);
         $flashMessage = $ownComment ? 'コメントを更新しました' : '記事にコメントしました';
 
         $request->session()->flash('status', $flashMessage);
