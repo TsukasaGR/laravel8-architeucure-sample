@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 class ArticleController extends Controller
 {
@@ -121,7 +122,7 @@ class ArticleController extends Controller
      *
      * @param Article $article
      * @return RedirectResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function destroy(Article $article)
     {

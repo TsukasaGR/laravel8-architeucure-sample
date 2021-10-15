@@ -26,12 +26,18 @@ class ArticleControllerTest extends TestCase
         return $user;
     }
 
+    /**
+     * @return void
+     */
     public function test_index_ログインしていない状態で一覧にアクセスするとログイン画面にリダイレクトされる()
     {
         $response = $this->get(route('article.index'));
         $response->assertRedirect(route('login'));
     }
 
+    /**
+     * @return void
+     */
     public function test_index_ログインしている状態で記事一覧ページにアクセスできる()
     {
         $this->getUserWithLogin();
@@ -40,10 +46,14 @@ class ArticleControllerTest extends TestCase
             ->assertSee('記事一覧');
     }
 
+    /**
+     * @return void
+     */
     public function test_show_記事詳細ページにアクセスできる()
     {
         $user = $this->getUserWithLogin();
         $this->actingAs($user);
+        /** @var Category $category */
         $category = Category::factory()->create();
         $article = Article::factory()
             ->user($user->id)
@@ -54,6 +64,9 @@ class ArticleControllerTest extends TestCase
             ->assertSee('記事詳細');
     }
 
+    /**
+     * @return void
+     */
     public function test_create_記事投稿ページにアクセスできる()
     {
         $this->getUserWithLogin();
@@ -76,14 +89,16 @@ class ArticleControllerTest extends TestCase
     }
 
     /**
-     * @param $url
-     * @param $isCreateArticle
-     * @param $errors
+     * @param string $url
+     * @param bool $isCreateArticle
+     * @param array $errors
+     * @return void
      * @dataProvider validateUrlDataProvider
      */
     public function test_validateUrl_不正なURLではバリデーションエラーになる($url, $isCreateArticle, $errors)
     {
         $user = $this->getUserWithLogin();
+        /** @var Category $category */
         $category = Category::factory()->create();
         if ($isCreateArticle) {
             Article::factory()
@@ -96,6 +111,9 @@ class ArticleControllerTest extends TestCase
         $response->assertSessionHasErrors($errors);
     }
 
+    /**
+     * @return void
+     */
     public function test_validateUrl_正常なURLでは記事作成プレビューページにリダイレクトされる()
     {
         $this->getUserWithLogin();
@@ -106,14 +124,16 @@ class ArticleControllerTest extends TestCase
     }
 
     /**
-     * @param $url
-     * @param $isCreateArticle
-     * @param $errors
+     * @param string $url
+     * @param bool $isCreateArticle
+     * @param array $errors
+     * @return void
      * @dataProvider validateUrlDataProvider
      */
     public function test_preview_不正なURLではバリデーションエラーになる($url, $isCreateArticle, $errors)
     {
         $user = $this->getUserWithLogin();
+        /** @var Category $category */
         $category = Category::factory()->create();
         if ($isCreateArticle) {
             Article::factory()
@@ -126,6 +146,9 @@ class ArticleControllerTest extends TestCase
         $response->assertSessionHasErrors($errors);
     }
 
+    /**
+     * @return void
+     */
     public function test_preview_正常なURLでは記事作成プレビューページにアクセスできる()
     {
         $this->getUserWithLogin();
@@ -147,11 +170,12 @@ class ArticleControllerTest extends TestCase
     }
 
     /**
-     * @param $url
-     * @param $categoryId
-     * @param $title
-     * @param $description
-     * @param $errors
+     * @param string $url
+     * @param int|null $categoryId
+     * @param string $title
+     * @param string $description
+     * @param array $errors
+     * @return void
      * @dataProvider storeDataProvider
      */
     public function test_store_バリデーションエラーになる($url, $categoryId, $title, $description, $errors)
@@ -166,9 +190,13 @@ class ArticleControllerTest extends TestCase
         $response->assertSessionHasErrors($errors);
     }
 
+    /**
+     * @return void
+     */
     public function test_store_正常に登録完了し、記事投稿イベントが発火する()
     {
         $this->getUserWithLogin();
+        /** @var Category $category */
         $category = Category::factory()->create();
 
         $response = $this->post(route('article.store'), [
