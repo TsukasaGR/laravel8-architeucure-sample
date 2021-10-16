@@ -79,6 +79,9 @@ class ArticleControllerTest extends TestCase
             ->assertSee('記事投稿');
     }
 
+    /**
+     * @return array[]
+     */
     public function validateUrlDataProvider()
     {
         // TODO: fakerを使って値を設定したいが、dataProvider内でfakerを使う方法がわからないため直書きにしている
