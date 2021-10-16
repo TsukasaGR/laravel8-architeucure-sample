@@ -2,11 +2,14 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Events\ArticlePosted;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class ArticleControllerTest extends TestCase
@@ -14,6 +17,7 @@ class ArticleControllerTest extends TestCase
     // TODO: setUpでmigrationを実行するときはDatabaseMigrationsを実行すること
 //    use DatabaseMigrations;
     use RefreshDatabase;
+    use WithFaker;
 
     /**
      * @return User
@@ -75,11 +79,9 @@ class ArticleControllerTest extends TestCase
             ->assertSee('記事投稿');
     }
 
-    /**
-     * @return array[]
-     */
     public function validateUrlDataProvider()
     {
+        // TODO: fakerを使って値を設定したいが、dataProvider内でfakerを使う方法がわからないため直書きにしている
         return [
             'URLが空白' => ['', false, ['url']],
             'URLが不正' => ['aaaaaaa', false, ['url']],
@@ -117,7 +119,7 @@ class ArticleControllerTest extends TestCase
     public function test_validateUrl_正常なURLでは記事作成プレビューページにリダイレクトされる()
     {
         $this->getUserWithLogin();
-        $url = 'https://example.com';
+        $url = $this->faker->url();
         $encodedUrl = urlencode($url);
         $response = $this->post(route('article.validateUrl'), ['url' => $url]);
         $response->assertRedirect(route('article.preview', ['url' => $encodedUrl]));
@@ -152,7 +154,7 @@ class ArticleControllerTest extends TestCase
     public function test_preview_正常なURLでは記事作成プレビューページにアクセスできる()
     {
         $this->getUserWithLogin();
-        $url = 'https://example.com';
+        $url = $this->activeRandomUrl();
         $response = $this->get(route('article.preview', ['url' => urlencode($url)]));
         $response->assertStatus(200)
             ->assertSee('記事投稿 - 確認');
@@ -195,17 +197,35 @@ class ArticleControllerTest extends TestCase
      */
     public function test_store_正常に登録完了し、記事投稿イベントが発火する()
     {
+        // テストでイベントが発火しないようにするためfakeを呼び出す
+        Event::fake();
+
         $this->getUserWithLogin();
         /** @var Category $category */
         $category = Category::factory()->create();
 
-        $response = $this->post(route('article.store'), [
-            'url' => 'https://example123.com',
-            'categoryId' => $category->id,
-            'title' => 'title',
-            'description' => 'description',
-        ]);
+        $url = $this->activeRandomUrl();
+        $categoryId = $category->id;
+        $title = $this->faker->title();
+        $description = $this->faker->realText(100);
+        $response = $this->post(
+            route('article.store'),
+            compact('url', 'categoryId', 'title', 'description')
+        );
 
-        $response->assertRedirect(route('dashboard'));
+        // レスポンスのテスト
+        $response->assertRedirect(route('dashboard'))
+            ->assertSessionHas('status');
+
+        // データが正常に登録されたかのテスト(ドメインサービスで登録処理を行っている場合はコントローラーではテストせず、サービス側のテストに任せる)
+        $isArticleExists = Article::where('url', $url)
+            ->where('category_id', $categoryId)
+            ->where('title', $title)
+            ->where('description', $description)
+            ->exists();
+        $this->assertTrue($isArticleExists);
+
+        // イベントが発火したかのテスト(ここでは発火したかどうかのテストのみで、リスナーのテストは別途行う)
+        Event::assertDispatched(ArticlePosted::class);
     }
 }
