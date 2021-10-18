@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domains\Article\Services\ArticleService;
 use App\Events\ArticlePosted;
 use App\Http\Requests\Article\PreviewRequest;
 use App\Http\Requests\Article\StoreRequest;
@@ -41,13 +42,12 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        $comments = $article->comments()
-                    ->defaultOrdered()
-                    ->paginate(20);
+        $articleService = new ArticleService($article);
+        $comments = $articleService->articleCommentsPaginate();
 
         /** @var int $loggedInUserId */
         $loggedInUserId = Auth::id();
-        $ownComment = $article->getUserComment($loggedInUserId);
+        $ownComment = $articleService->userComment($loggedInUserId);
 
         return view('article.show', compact('article', 'comments', 'ownComment'));
     }
@@ -101,7 +101,16 @@ class ArticleController extends Controller
     public function store(StoreRequest $request)
     {
         $article = DB::transaction(function () use ($request) {
-            return Article::create([
+            // このような方法での実装もあるが、Serviceの責務は渡された$articleモデルを操作することであり、各種プロパティと入力フォームが密結合しているため、モデル生成まではController側で行うべきだと考えている
+//            return ArticleService::create(
+//                Auth::id(),
+//                $request->input('categoryId'),
+//                $request->input('url'),
+//                $request->input('title'),
+//                $request->input('description'),
+//                $request->input('imagePath'),
+//            );
+            $article = new Article([
                 'user_id' => Auth::id(),
                 'category_id' => $request->input('categoryId'),
                 'url' => $request->input('url'),
@@ -109,6 +118,7 @@ class ArticleController extends Controller
                 'description' => $request->input('description'),
                 'image_path' => $request->input('imagePath'),
             ]);
+            return (new ArticleService($article))->create();
         });
 
         ArticlePosted::dispatch($article);

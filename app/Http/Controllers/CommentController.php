@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domains\Article\Services\ArticleService;
 use App\Http\Requests\Comment\StoreOrUpdateRequest;
 use App\Models\User;
 use App\Models\Article;
@@ -28,7 +29,7 @@ class CommentController extends Controller
 
         /** @var int $loggedInUserId */
         $loggedInUserId = Auth::id();
-        $ownComment = $article->getUserComment($loggedInUserId);
+        $ownComment = (new ArticleService($article))->userComment($loggedInUserId);
         $flashMessage = $ownComment ? 'コメントを更新しました' : '記事にコメントしました';
 
         $request->session()->flash('status', $flashMessage);
