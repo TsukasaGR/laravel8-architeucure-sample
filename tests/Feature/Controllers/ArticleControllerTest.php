@@ -6,7 +6,6 @@ use App\Events\ArticlePosted;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
@@ -14,10 +13,7 @@ use Tests\TestCase;
 
 class ArticleControllerTest extends TestCase
 {
-    // TODO: setUpでmigrationを実行するときはDatabaseMigrationsを実行すること
-//    use DatabaseMigrations;
-    use RefreshDatabase;
-    use WithFaker;
+    use RefreshDatabase, WithFaker;
 
     /**
      * @return User
