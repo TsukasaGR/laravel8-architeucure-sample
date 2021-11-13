@@ -4,13 +4,14 @@ namespace App\UseCases\Article\GetViewList;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class GetViewListOutputData implements GetViewListOutputPortInterface
+class OutputData implements OutputPortInterface
 {
     /**
      * @param LengthAwarePaginator $articlePaginator
      */
     public function __construct(private LengthAwarePaginator $articlePaginator)
-    {}
+    {
+    }
 
     /**
      * @return LengthAwarePaginator

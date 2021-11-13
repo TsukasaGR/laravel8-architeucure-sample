@@ -2,7 +2,7 @@
 
 namespace App\UseCases\Article\GetViewList;
 
-interface GetViewListInputPortInterface
+interface InputPortInterface
 {
     /**
      * @param string|null $q

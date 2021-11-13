@@ -10,10 +10,10 @@ use App\Http\Requests\Article\ValidateUrlRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Domains\Ogp;
-use App\Presenters\Article\ListViewModel;
+use App\Presenters\Article\IndexPresenter;
 use App\Services\Domains\Article\DeleteArticleService;
-use App\UseCases\Article\GetViewList\GetViewListInputData;
-use App\UseCases\Article\GetViewList\GetViewListInteractor;
+use App\UseCases\Article\GetViewList\InputData;
+use App\UseCases\Article\GetViewList\Interactor;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -35,15 +35,15 @@ class ArticleController extends Controller
         $q = $request->query('q');
 
         // UseCase InputPortの実態を生成する
-        $getViewListInputData = new GetViewListInputData($q);
+        $getViewListInputData = new InputData($q);
 
         // UseCase Interactorを呼び出し、UseCase OutputPortの実態を取得する
-        $getViewListOutputData = (new GetViewListInteractor($articleGateway))($getViewListInputData);
+        $getViewListOutputData = (new Interactor($articleGateway))($getViewListInputData);
 
         // PresenterにてViewModelを取得する
-        $listViewModel = (new ListViewModel($getViewListOutputData, $q))();
+        $viewModel = (new IndexPresenter($getViewListOutputData, $q))();
 
-        return view('article.index', $listViewModel);
+        return view('article.index', $viewModel);
     }
 
     /**

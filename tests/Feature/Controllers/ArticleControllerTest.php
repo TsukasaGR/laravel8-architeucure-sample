@@ -7,7 +7,6 @@ use App\Gateways\ArticleGatewayInterface;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
@@ -55,6 +54,7 @@ class ArticleControllerTest extends TestCase
     public function test_index_ログインしている状態で記事一覧ページにアクセスできる_Gatewayをモックしたパターン()
     {
         $user = $this->getUserWithLogin();
+        /** @var Category $category */
         $category = Category::factory()->create();
         Article::factory()
             ->user($user->id)

@@ -4,7 +4,7 @@ namespace App\UseCases\Article\GetViewList;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-interface GetViewListOutputPortInterface
+interface OutputPortInterface
 {
     /**
      * @param LengthAwarePaginator $articlesPaginator

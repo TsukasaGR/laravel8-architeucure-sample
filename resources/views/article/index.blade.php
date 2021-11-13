@@ -1,8 +1,8 @@
 @php
-    /** @var \App\Presenters\Article\ListViewModel $listViewModel */
+    /** @var \App\Models\Domains\Article\IndexViewModel $indexViewModel */
 
-    $articles = $listViewModel->articles;
-    $q = $listViewModel->q;
+    $articles = $indexViewModel->articles;
+    $q = $indexViewModel->q;
 @endphp
 
 <x-layouts.app>

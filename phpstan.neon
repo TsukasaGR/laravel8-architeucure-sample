@@ -29,6 +29,10 @@ parameters:
             message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
             path: ./app/Models
 
+        # テストでモック作成した時に表示されてしまうが処理場問題ないため除外する
+        -
+            message: '#Call to an undefined method Mockery\\ExpectationInterface|Mockery\\HigherOrderMessage::andReturn\(\).#'
+            path: ./tests
     excludePaths:
         # デフォルトで設定されているもので、かつエラー除外も難しいため除外とする
         - ./routes/console.php

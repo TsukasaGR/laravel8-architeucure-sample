@@ -4,22 +4,23 @@ namespace App\UseCases\Article\GetViewList;
 
 use App\Gateways\ArticleGatewayInterface;
 
-class GetViewListInteractor
+class Interactor
 {
     /**
      * @param ArticleGatewayInterface $articleGateway
      */
     public function __construct(private ArticleGatewayInterface $articleGateway)
-    {}
+    {
+    }
 
     /**
-     * @param GetViewListInputPortInterface $inputPort
-     * @return GetViewListOutputPortInterface
+     * @param InputPortInterface $inputPort
+     * @return OutputPortInterface
      */
-    public function __invoke(GetViewListInputPortInterface $inputPort): GetViewListOutputPortInterface
+    public function __invoke(InputPortInterface $inputPort): OutputPortInterface
     {
         $q = $inputPort->getQuery();
         $viewList = $this->articleGateway->viewListByPaginate($q);
-        return new GetViewListOutputData($viewList);
+        return new OutputData($viewList);
     }
 }
