@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ArticlePosted;
 use App\Http\Requests\Article\PreviewRequest;
 use App\Http\Requests\Article\StoreRequest;
 use App\Http\Requests\Article\ValidateUrlRequest;
-use App\Models\User;
 use App\Models\Article;
 use App\Models\Category;
-use App\Utils\Ogp;
+use App\Models\Domains\Ogp;
+use App\Services\Domains\Article\DeleteArticleService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Contracts\View\View;
+use Throwable;
 
 class ArticleController extends Controller
 {
@@ -24,17 +26,10 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        /** @var string $q */
+        /** @var string|null $q */
         $q = $request->query('q');
 
-        $searchQuery = addcslashes($q, '%_\\'); // 検索文字列をそのままの文字列として検索したいが、DBのエスケープ文字の場合そのまま渡すと正しく検索できないため、エスケープ文字の場合はバックスラッシュを付加して検索する
-        $articles = Article::with(['user', 'comments'])
-            ->where('title', 'like', "%{$searchQuery}%")
-            ->orWhere('description', 'like', "%{$searchQuery}%")
-            ->orWhereHas('comments', function ($query) use ($searchQuery) {
-                $query->where('body', 'like', "%{$searchQuery}%");
-            })
-            ->orderBy('created_at', 'desc')
+        $articles = Article::viewList($q)
             ->paginate(20);
 
         return view('article.index', compact('articles', 'q'));
@@ -47,14 +42,14 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         $comments = $article->comments()
-                    ->orderBy('comments.updated_at', 'desc')
+                    ->defaultOrdered()
                     ->paginate(20);
 
-        /** @var User $loggedInUser */
-        $loggedInUser = Auth::user();
-        $ownComment = $article->getUserComment($loggedInUser);
+        /** @var int $loggedInUserId */
+        $loggedInUserId = Auth::id();
+        $ownComment = $article->getUserComment($loggedInUserId);
 
-        return view('article.show', compact('article', 'comments', 'loggedInUser', 'ownComment'));
+        return view('article.show', compact('article', 'comments', 'ownComment'));
     }
 
     /**
@@ -105,8 +100,8 @@ class ArticleController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        DB::transaction(function () use ($request) {
-            Article::create([
+        $article = DB::transaction(function () use ($request) {
+            return Article::create([
                 'user_id' => Auth::id(),
                 'category_id' => $request->input('categoryId'),
                 'url' => $request->input('url'),
@@ -116,7 +111,24 @@ class ArticleController extends Controller
             ]);
         });
 
+        ArticlePosted::dispatch($article);
         $request->session()->flash('status', '記事を投稿しました');
+
+        return redirect()->route('dashboard');
+    }
+
+    /**
+     * UI側は作成していないが、ドメインサービスの実装例用に作成した
+     *
+     * @param Article $article
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    public function destroy(Article $article)
+    {
+        DB::transaction(function () use ($article) {
+            (new DeleteArticleService($article))();
+        });
 
         return redirect()->route('dashboard');
     }

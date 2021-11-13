@@ -44,6 +44,24 @@ services:
           test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
           retries: 3
           timeout: 5s
+    mysql-test:
+        image: 'mysql:8.0'
+        ports:
+            - '${TEST_FORWARD_DB_PORT:-3306}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${TEST_DB_PASSWORD}'
+            MYSQL_DATABASE: '${TEST_DB_DATABASE}'
+            MYSQL_USER: '${TEST_DB_USERNAME}'
+            MYSQL_PASSWORD: '${TEST_DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        volumes:
+            - 'sailmysql-test:/var/lib/mysql'
+        networks:
+            - sail
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${TEST_DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
     redis:
         image: 'redis:alpine'
         ports:
@@ -86,6 +104,8 @@ networks:
         driver: bridge
 volumes:
     sailmysql:
+        driver: local
+    sailmysql-test:
         driver: local
     sailredis:
         driver: local
