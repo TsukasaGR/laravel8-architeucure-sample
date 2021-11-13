@@ -1,3 +1,10 @@
+@php
+    /** @var \App\Presenters\Article\ListViewModel $listViewModel */
+
+    $articles = $listViewModel->articles;
+    $q = $listViewModel->q;
+@endphp
+
 <x-layouts.app>
     <x-slot name="header">
         {{ __('記事一覧') }}
