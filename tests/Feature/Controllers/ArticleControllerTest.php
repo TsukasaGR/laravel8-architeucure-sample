@@ -3,12 +3,14 @@
 namespace Tests\Feature\Controllers;
 
 use App\Events\ArticlePosted;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Event;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class ArticleControllerTest extends TestCase
@@ -42,7 +44,31 @@ class ArticleControllerTest extends TestCase
     {
         $this->getUserWithLogin();
         $response = $this->get(route('article.index'));
-        $response->assertStatus(200)
+        $response->assertOk()
+            ->assertSee('記事一覧');
+    }
+
+    /**
+     * @return void
+     */
+    public function test_index_ログインしている状態で記事一覧ページにアクセスできる_Gatewayをモックしたパターン()
+    {
+        $user = $this->getUserWithLogin();
+        /** @var Category $category */
+        $category = Category::factory()->create();
+        Article::factory()
+            ->user($user->id)
+            ->category($category->id)
+            ->create();
+
+        // Gatewayをモックに差し替え
+        $this->mock(ArticleRepositoryInterface::class, function (MockInterface $mock) {
+            $articles = Article::viewList(null)->paginate();
+            $mock->shouldReceive('viewListByPaginate')->andReturn($articles);
+        });
+
+        $response = $this->get(route('article.index'));
+        $response->assertOk()
             ->assertSee('記事一覧');
     }
 

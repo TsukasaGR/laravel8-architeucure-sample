@@ -1,3 +1,10 @@
+@php
+    /** @var \App\Models\Domains\Article\IndexViewModel $indexViewModel */
+
+    $articles = $indexViewModel->articles;
+    $q = $indexViewModel->q;
+@endphp
+
 <x-layouts.app>
     <x-slot name="header">
         {{ __('記事一覧') }}

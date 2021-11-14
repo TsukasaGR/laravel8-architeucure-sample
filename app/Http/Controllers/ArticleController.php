@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Events\ArticlePosted;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 use App\Http\Requests\Article\PreviewRequest;
 use App\Http\Requests\Article\StoreRequest;
 use App\Http\Requests\Article\ValidateUrlRequest;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Domains\Ogp;
+use App\Presenters\Article\IndexPresenter;
 use App\Services\Domains\Article\DeleteArticleService;
+use App\UseCases\Article\GetViewList\InputData;
+use App\UseCases\Article\GetViewList\Interactor;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,17 +26,25 @@ class ArticleController extends Controller
 {
     /**
      * @param Request $request
+     * @param ArticleRepositoryInterface $articleGateway
      * @return ViewFactory|View
      */
-    public function index(Request $request)
+    public function index(Request $request, ArticleRepositoryInterface $articleGateway)
     {
         /** @var string|null $q */
         $q = $request->query('q');
 
-        $articles = Article::viewList($q)
-            ->paginate(20);
+        // UseCase InputPortの実体を生成する
+        $getViewListInputData = new InputData($q);
 
-        return view('article.index', compact('articles', 'q'));
+        // UseCase Interactorを呼び出し、UseCase OutputPortの実体を取得する
+        $getViewListOutputData = (new Interactor($articleGateway))($getViewListInputData);
+
+        // PresenterにてViewModelを取得する
+        $viewModel = (new IndexPresenter($getViewListOutputData, $q))();
+
+        // ViewModelを渡してViewを表示する
+        return view('article.index', $viewModel);
     }
 
     /**
