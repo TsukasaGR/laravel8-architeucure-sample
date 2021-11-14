@@ -34,15 +34,16 @@ class ArticleController extends Controller
         /** @var string|null $q */
         $q = $request->query('q');
 
-        // UseCase InputPortの実態を生成する
+        // UseCase InputPortの実体を生成する
         $getViewListInputData = new InputData($q);
 
-        // UseCase Interactorを呼び出し、UseCase OutputPortの実態を取得する
+        // UseCase Interactorを呼び出し、UseCase OutputPortの実体を取得する
         $getViewListOutputData = (new Interactor($articleGateway))($getViewListInputData);
 
         // PresenterにてViewModelを取得する
         $viewModel = (new IndexPresenter($getViewListOutputData, $q))();
 
+        // ViewModelを渡してViewを表示する
         return view('article.index', $viewModel);
     }
 
