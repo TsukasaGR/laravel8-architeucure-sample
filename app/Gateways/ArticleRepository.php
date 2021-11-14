@@ -3,9 +3,10 @@
 namespace App\Gateways;
 
 use App\Models\Article;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class ArticleGateway implements ArticleGatewayInterface
+class ArticleRepository implements ArticleRepositoryInterface
 {
     /**
      * @param string|null $q
@@ -13,9 +14,6 @@ class ArticleGateway implements ArticleGatewayInterface
      */
     public function viewListByPaginate(?string $q): LengthAwarePaginator
     {
-        // Gatewayをモックした場合に当メソッドが呼び出されていないかを確認する際はコメントを外す
-        // throw new \Exception();
-
         return Article::viewList($q)
             ->paginate(20);
     }

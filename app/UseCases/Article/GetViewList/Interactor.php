@@ -2,14 +2,14 @@
 
 namespace App\UseCases\Article\GetViewList;
 
-use App\Gateways\ArticleGatewayInterface;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 
 class Interactor
 {
     /**
-     * @param ArticleGatewayInterface $articleGateway
+     * @param ArticleRepositoryInterface $articleGateway
      */
-    public function __construct(private ArticleGatewayInterface $articleGateway)
+    public function __construct(private ArticleRepositoryInterface $articleGateway)
     {
     }
 

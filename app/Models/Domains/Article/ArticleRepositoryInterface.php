@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Gateways;
+namespace App\Models\Domains\Article;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-interface ArticleGatewayInterface
+interface ArticleRepositoryInterface
 {
     /**
      * @param string|null $q

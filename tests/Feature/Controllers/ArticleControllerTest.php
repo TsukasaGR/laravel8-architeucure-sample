@@ -3,7 +3,7 @@
 namespace Tests\Feature\Controllers;
 
 use App\Events\ArticlePosted;
-use App\Gateways\ArticleGatewayInterface;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
@@ -62,7 +62,7 @@ class ArticleControllerTest extends TestCase
             ->create();
 
         // Gatewayをモックに差し替え
-        $this->mock(ArticleGatewayInterface::class, function (MockInterface $mock) {
+        $this->mock(ArticleRepositoryInterface::class, function (MockInterface $mock) {
             $articles = Article::viewList(null)->paginate();
             $mock->shouldReceive('viewListByPaginate')->andReturn($articles);
         });

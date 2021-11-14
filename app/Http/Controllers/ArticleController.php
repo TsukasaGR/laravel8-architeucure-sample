@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ArticlePosted;
-use App\Gateways\ArticleGatewayInterface;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 use App\Http\Requests\Article\PreviewRequest;
 use App\Http\Requests\Article\StoreRequest;
 use App\Http\Requests\Article\ValidateUrlRequest;
@@ -26,10 +26,10 @@ class ArticleController extends Controller
 {
     /**
      * @param Request $request
-     * @param ArticleGatewayInterface $articleGateway
+     * @param ArticleRepositoryInterface $articleGateway
      * @return ViewFactory|View
      */
-    public function index(Request $request, ArticleGatewayInterface $articleGateway)
+    public function index(Request $request, ArticleRepositoryInterface $articleGateway)
     {
         /** @var string|null $q */
         $q = $request->query('q');

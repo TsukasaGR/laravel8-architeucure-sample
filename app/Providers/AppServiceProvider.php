@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Gateways\ArticleGateway;
-use App\Gateways\ArticleGatewayInterface;
+use App\Gateways\ArticleRepository;
+use App\Models\Domains\Article\ArticleRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(ArticleGatewayInterface::class, ArticleGateway::class);
+        $this->app->bind(ArticleRepositoryInterface::class, ArticleRepository::class);
     }
 
     /**
