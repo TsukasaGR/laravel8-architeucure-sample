@@ -92,22 +92,4 @@ class Article extends Model
             ->searchKeyword($keyword)
             ->defaultOrdered();
     }
-
-    /**
-     * @param int|null $userId
-     * @return string|null
-     * @comment 対象記事に対する対象ユーザのコメント取得
-     */
-    public function getUserComment(?int $userId = null): ?string
-    {
-        if (! $userId) {
-            return null;
-        }
-
-        $comment = $this->comments()->whereUserId($userId)->first();
-        if (! $comment) {
-            return null;
-        }
-        return $comment->body;
-    }
 }
